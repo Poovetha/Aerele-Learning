@@ -1,21 +1,21 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "DAILY-TEST-.#####",
- "creation": "2026-03-23 13:51:18.047678",
+ "autoname": "QA-.#####",
+ "creation": "2026-03-24 12:26:14.601579",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "section_break_cu7y",
-  "test_date",
-  "mentor",
-  "question_and_answer",
+  "section_break_ibk4",
+  "concept",
+  "question",
+  "answer",
   "amended_from",
-  "add_questions"
+  "mark"
  ],
  "fields": [
   {
-   "fieldname": "section_break_cu7y",
+   "fieldname": "section_break_ibk4",
    "fieldtype": "Section Break"
   },
   {
@@ -23,42 +23,41 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Daily Test",
+   "options": "Question and Answer",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
   },
   {
-   "fieldname": "test_date",
-   "fieldtype": "Date",
-   "label": "Test Date"
-  },
-  {
-   "fieldname": "mentor",
+   "fieldname": "concept",
    "fieldtype": "Link",
-   "label": "Mentor",
-   "options": "Employee"
+   "label": "Concept",
+   "options": "Concepts"
   },
   {
-   "fieldname": "question_and_answer",
-   "fieldtype": "Table",
-   "label": "Question and Answer",
-   "options": "Concept Questions"
+   "fieldname": "question",
+   "fieldtype": "Text",
+   "label": "Question"
   },
   {
-   "fieldname": "add_questions",
-   "fieldtype": "Button",
-   "label": "Add Questions"
+   "fieldname": "answer",
+   "fieldtype": "Text",
+   "label": "Answer"
+  },
+  {
+   "fieldname": "mark",
+   "fieldtype": "Int",
+   "label": "Mark"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-24 23:20:24.171229",
+ "modified": "2026-03-24 13:10:43.228137",
  "modified_by": "Administrator",
  "module": "Frappe Learning",
- "name": "Daily Test",
+ "name": "Question and Answer",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
@@ -80,5 +79,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "creation",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "question"
 }

@@ -1,0 +1,19 @@
+{
+ "content": null,
+ "creation": "2026-03-24 10:31:16.137809",
+ "docstatus": 0,
+ "doctype": "Page",
+ "idx": 0,
+ "modified": "2026-03-24 10:31:16.137809",
+ "modified_by": "Administrator",
+ "module": "Frappe Learning",
+ "name": "assessment",
+ "owner": "Administrator",
+ "page_name": "assessment",
+ "roles": [],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 1,
+ "title": "Daily Test"
+}
