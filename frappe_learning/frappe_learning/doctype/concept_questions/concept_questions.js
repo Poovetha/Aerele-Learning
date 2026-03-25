@@ -2,18 +2,17 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on("Concept Questions", {
-    concept(frm, cdt, cdn) {
+	concept(frm, cdt, cdn) {
+		let row = locals[cdt][cdn];
+		row.question = "";
+		frm.refresh_field("concept_questions");
 
-        let row = locals[cdt][cdn];
-        row.question = "";
-        frm.refresh_field("concept_questions");
-
-        frappe.model.set_query(cdt, cdn, "question", function() {
-            return {
-                filters: {
-                    concept: row.concept
-                }
-            };
-        });
-    }
+		frappe.model.set_query(cdt, cdn, "question", function () {
+			return {
+				filters: {
+					concept: row.concept,
+				},
+			};
+		});
+	},
 });

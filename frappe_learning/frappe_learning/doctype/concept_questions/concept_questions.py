@@ -7,6 +7,6 @@ from frappe.model.naming import make_autoname
 
 
 class ConceptQuestions(Document):
-    def autoname(self):
-        if self.concept:
-            self.name = make_autoname(f"QUESTION-.#####")
+	def autoname(self):
+		if self.concept:
+			self.name = make_autoname("QUESTION-.#####")
