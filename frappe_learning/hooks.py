@@ -5,6 +5,10 @@ app_description = "Helps to Overview the mentees by mentors"
 app_email = "poovethapalanivelu@gmail.com"
 app_license = "mit"
 
+
+# boot_session = "frappe_learning.api.mentee_login"
+# app_include_js = "/assets/frappe_learning/js/redirect_bundle.js"
+
 # Apps
 # ------------------
 
@@ -249,4 +253,3 @@ app_license = "mit"
 # ------------
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
-
