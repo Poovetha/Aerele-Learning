@@ -6,7 +6,17 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "name_of_mentee"
+  "name_of_mentee",
+  "score",
+  "amended_from",
+  "column_break_yzvi",
+  "approved",
+  "start_time",
+  "extra_time",
+  "section_break_ycmi",
+  "question_and_answer",
+  "feedback",
+  "mentor_feedback"
  ],
  "fields": [
   {
@@ -14,12 +24,70 @@
    "fieldtype": "Link",
    "label": "Name of Mentee",
    "options": "Employee"
+  },
+  {
+   "fieldname": "question_and_answer",
+   "fieldtype": "Table",
+   "label": "Question and Answer",
+   "options": "Answers"
+  },
+  {
+   "fieldname": "score",
+   "fieldtype": "Int",
+   "label": "Score",
+   "read_only": 1
+  },
+  {
+   "fieldname": "feedback",
+   "fieldtype": "Text",
+   "label": "Feedback"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Test Answer",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "mentor_feedback",
+   "fieldtype": "Text",
+   "label": "CTO/Mentor Feedback"
+  },
+  {
+   "fieldname": "start_time",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Start Time"
+  },
+  {
+   "fieldname": "extra_time",
+   "fieldtype": "Int",
+   "label": "Extra Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "approved",
+   "fieldtype": "Check",
+   "label": "Approved"
+  },
+  {
+   "fieldname": "column_break_yzvi",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_ycmi",
+   "fieldtype": "Section Break"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2026-03-25 17:54:12.695258",
+ "modified": "2026-04-01 16:24:50.801541",
  "modified_by": "Administrator",
  "module": "Frappe Learning",
  "name": "Test Answer",
@@ -36,6 +104,32 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Software Developer",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Chief Technical Officer",
+   "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],

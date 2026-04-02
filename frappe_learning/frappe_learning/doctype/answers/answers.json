@@ -1,0 +1,55 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-26 10:07:57.641238",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "concept",
+  "question",
+  "answer",
+  "mentor_answer"
+ ],
+ "fields": [
+  {
+   "fieldname": "concept",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Concept"
+  },
+  {
+   "fieldname": "question",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Question"
+  },
+  {
+   "fieldname": "answer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Answer"
+  },
+  {
+   "fieldname": "mentor_answer",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Mentor Answer"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2026-03-27 15:59:53.394500",
+ "modified_by": "Administrator",
+ "module": "Frappe Learning",
+ "name": "Answers",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

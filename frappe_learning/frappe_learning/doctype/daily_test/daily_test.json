@@ -11,7 +11,8 @@
   "mentor",
   "question_and_answer",
   "amended_from",
-  "add_questions"
+  "add_questions",
+  "completed"
  ],
  "fields": [
   {
@@ -49,13 +50,20 @@
    "fieldname": "add_questions",
    "fieldtype": "Button",
    "label": "Add Questions"
+  },
+  {
+   "default": "0",
+   "fieldname": "completed",
+   "fieldtype": "Check",
+   "label": "Completed",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-25 19:13:08.311480",
+ "modified": "2026-04-01 12:29:39.087488",
  "modified_by": "Administrator",
  "module": "Frappe Learning",
  "name": "Daily Test",
@@ -84,6 +92,20 @@
    "read": 1,
    "report": 1,
    "role": "Software Developer",
+   "select": 1,
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Chief Technical Officer",
    "select": 1,
    "share": 1,
    "submit": 1,

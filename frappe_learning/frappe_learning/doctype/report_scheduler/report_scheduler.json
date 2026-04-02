@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-03-30 16:55:48.416925",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "report_name",
+  "schedule_type",
+  "run_time",
+  "last_run",
+  "next_run",
+  "enabled"
+ ],
+ "fields": [
+  {
+   "fieldname": "report_name",
+   "fieldtype": "Link",
+   "label": "Report Name",
+   "options": "Report"
+  },
+  {
+   "fieldname": "schedule_type",
+   "fieldtype": "Select",
+   "label": "Schedule Type",
+   "options": "\nDaily\nWeekly\n3 Weeks"
+  },
+  {
+   "fieldname": "run_time",
+   "fieldtype": "Time",
+   "label": "Run Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "last_run",
+   "fieldtype": "Datetime",
+   "label": "Last Run"
+  },
+  {
+   "fieldname": "next_run",
+   "fieldtype": "Datetime",
+   "label": "Next Run"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-03-30 17:35:02.228017",
+ "modified_by": "Administrator",
+ "module": "Frappe Learning",
+ "name": "Report Scheduler",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,10 +1,9 @@
 # Copyright (c) 2026, Poovetha and contributors
 # For license information, please see license.txt
 
-import frappe
+# import frappe
 from frappe.model.document import Document
 
 
-class TestAnswer(Document):
-	def on_submit(self):
-		self.approved = 1
+class Answers(Document):
+	pass
