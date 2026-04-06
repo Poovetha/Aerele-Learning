@@ -7,6 +7,7 @@ from frappe.model.naming import make_autoname
 
 class Testing(NestedSet):
 
+
 	def autoname(self):
 		if self.is_group:
 			if not self.title:

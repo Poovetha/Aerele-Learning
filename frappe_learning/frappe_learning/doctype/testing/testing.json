@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2026-04-02 11:18:45.307055",
+ "creation": "2026-04-03 10:44:40.038772",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
@@ -12,6 +12,7 @@
   "old_parent",
   "parent_testing",
   "title",
+  "mentor",
   "question",
   "answer"
  ],
@@ -75,13 +76,20 @@
    "label": "Title",
    "mandatory_depends_on": "eval:doc.is_group",
    "options": "Concepts"
+  },
+  {
+   "depends_on": "eval:doc.is_group==0",
+   "fieldname": "mentor",
+   "fieldtype": "Link",
+   "label": "Mentor",
+   "options": "User"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_tree": 1,
  "links": [],
- "modified": "2026-04-02 13:03:28.635731",
+ "modified": "2026-04-06 13:30:03.953214",
  "modified_by": "Administrator",
  "module": "Frappe Learning",
  "name": "Testing",
@@ -98,6 +106,32 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Software Developer",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Chief Technical Officer",
+   "select": 1,
    "share": 1,
    "write": 1
   }

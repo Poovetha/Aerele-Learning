@@ -21,7 +21,6 @@ frappe_learning.daily_assessment.load = function (page) {
 
 	this.container.append(`<b>Mentee</b> = ${frappe.session.user}<br><br>`);
 
-	// Prevent multiple tabs
 	if (localStorage.getItem("test_active")) {
 		this.container.html(`<p style="color:red; text-align:center;">Test already open in another tab</p>`);
 		return;
@@ -33,13 +32,12 @@ frappe_learning.daily_assessment.load = function (page) {
 		clearInterval(this.timer_interval);
 	};
 
-	// Disable buttons initially
 	page.set_primary_action("Submit", () => {
 		if (this.is_submitted || !this.test_started) return;
 		this.submit_test();
 	});
 
-	page.set_secondary_action("Raise Issue", () => {
+	page.set_secondary_action("Request Time", () => {
 		if (this.is_submitted || !this.test_started) return;
 		this.raise_issue();
 	});
@@ -112,7 +110,6 @@ frappe_learning.daily_assessment.show_dashboard = function (data) {
 frappe_learning.daily_assessment.start_test = function (data) {
 	this.test_started = true;
 
-	// Enable buttons
 	this.page.btn_primary.prop("disabled", false);
 	this.page.btn_secondary.prop("disabled", false);
 
@@ -162,7 +159,7 @@ frappe_learning.daily_assessment.start_timer = function (end_time) {
 
 				this.lock_ui();
 
-				frappe.msgprint("⏱ Time is up! Auto submitting...");
+				frappe.msgprint(" Time is up! Test is submitted");
 
 				setTimeout(() => {
 					this.submit_test(true);
@@ -221,10 +218,6 @@ frappe_learning.daily_assessment.submit_test = function (auto = false) {
 		callback: (r) => {
 			frappe.msgprint("Test Submitted Successfully");
 			this.show_results(r.message);
-		},
-		error: () => {
-			frappe.msgprint("Submission failed. Try again.");
-			this.is_submitted = false;
 		},
 	});
 };

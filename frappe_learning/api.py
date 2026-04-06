@@ -114,11 +114,6 @@ def save_test_answer(answers):
 	user = frappe.session.user
 	employee = frappe.get_value("Employee", {"user_id": user}, "name")
 
-	settings = frappe.get_single("FL Settings")
-	duration = settings.duration
-
-	now = now_datetime()
-
 	test_data = frappe.get_value(
 		"Test Answer",
 		{
@@ -131,11 +126,6 @@ def save_test_answer(answers):
 
 	if not test_data:
 		frappe.throw("Test not started properly")
-
-	start_time = test_data.start_time
-	extra_time = test_data.extra_time or 0
-
-	personal_end = add_to_date(start_time, minutes=(duration + extra_time))
 
 	answers = frappe.parse_json(answers)
 

@@ -11,7 +11,6 @@ def send_telegram_message(chat_id, message):
         "parse_mode": "Markdown"
     }
 
-    response = requests.post(url, json=payload)
     frappe.log_error("Success")
 
 # import requests

@@ -9,7 +9,6 @@ class CustomNotification(Notification):
 
         print("Im in custom  Pooooooooooooooooooooooooooooooooooooooooooo")
         
-
         if self.channel != "Telegram":
             print("Im channnel Pooooooooooooooooooooooooooooooooooooooooooo")
             return super().send(doc)
@@ -33,8 +32,6 @@ class CustomNotification(Notification):
                         chat_ids.append(chat_id)
 
         elif doc.doctype == "Test Time":
-            print("Im Pooooooooooooooooooooooooooooooooooooooooooo")
-
             mentor = frappe.get_value("Employee", doc.mentee, "reports_to")
             mentor_user = frappe.get_value("Employee", mentor, "user_id")
 
