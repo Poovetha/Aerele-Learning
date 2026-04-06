@@ -1,4 +1,6 @@
+# Copyright (c) 2026, Poovetha and contributors
 import frappe
+import json
 from frappe.utils import nowdate, add_days
 
 
@@ -51,27 +53,19 @@ def get_data(filters):
     user = frappe.session.user
     roles = frappe.get_roles(user)
 
-    from_date = filters.get("from_date")
-    to_date = filters.get("to_date")
-
-    conditions = ""
-    values = []
-
-    if from_date and to_date:
-        conditions += " AND ta.creation BETWEEN %s AND %s"
-        values.extend([from_date, to_date])
-
     employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
 
     if "Chief Technical Officer" in roles or "System Manager" in roles:
         mentees = frappe.db.sql("""
-            SELECT name FROM `tabEmployee`
+            SELECT name, employee_name
+            FROM `tabEmployee`
             WHERE reports_to IS NOT NULL
         """, as_dict=True)
 
     elif employee:
         mentees = frappe.db.sql("""
-            SELECT name FROM `tabEmployee`
+            SELECT name, employee_name
+            FROM `tabEmployee`
             WHERE reports_to = %s
         """, (employee,), as_dict=True)
 
@@ -82,66 +76,49 @@ def get_data(filters):
 
     for m in mentees:
 
-        scores = frappe.db.sql(f"""
-            SELECT 
-                ta.score,
-                ta.creation,
-                ta.feedback,
-                child.concept
-            FROM `tabTest Answer` ta
-            LEFT JOIN `tabAnswers` child
-                ON child.parent = ta.name
-            WHERE ta.name_of_mentee = %s {conditions}
-        """, [m.name] + values, as_dict=True)
+        records = frappe.get_all(
+            "Test Answer",
+            filters={"name_of_mentee": m.name},
+            fields=["score", "feedback", "creation"]
+        )
 
-        if not scores:
+        if not records:
             continue
 
         total_score = 0
-        concept_map = {}
+        strong_all = []
+        weak_all = []
 
-        ai_strong = set()
-        ai_weak = set()
+        for r in records:
+            total_score += r.score or 0
 
-        for s in scores:
-            total_score += s.score
+            if r.feedback:
+                try:
+                    ai = json.loads(r.feedback)
+                    strong_all += ai.get("strong_concepts", [])
+                    weak_all += ai.get("weak_concepts", [])
+                except:
+                    pass
 
-            concept = s.concept or "General"
+        avg_score = total_score / len(records)
 
-            if concept not in concept_map:
-                concept_map[concept] = []
+        if avg_score >= 7:
+            strong_all.append("Overall Performance")
+        elif avg_score < 4:
+            weak_all.append("Overall Performance")
 
-            concept_map[concept].append(s.score)
+        strong = list(set(strong_all))
+        weak = list(set(weak_all))
 
-            feedback = (s.feedback or "").lower()
-
-            if "good" in feedback or "strong" in feedback:
-                ai_strong.add(concept)
-
-            if "weak" in feedback or "poor" in feedback:
-                ai_weak.add(concept)
-
-        avg_score = total_score / len(scores)
-
-        strong = []
-        weak = []
-
-        for concept, vals in concept_map.items():
-            avg = sum(vals) / len(vals)
-
-            if avg >= 70 or concept in ai_strong:
-                strong.append(concept)
-
-            elif avg < 50 or concept in ai_weak:
-                weak.append(concept)
-
-        last_score = sorted(scores, key=lambda x: x.creation, reverse=True)[0].score
+        # 🔹 Last test score
+        last_record = sorted(records, key=lambda x: x.creation, reverse=True)[0]
+        last_score = last_record.score
 
         report.append({
-            "mentee": m.name,
+            "mentee": m.name, 
             "avg_score": round(avg_score, 2),
-            "strong": ", ".join(set(strong)) or "-",
-            "weak": ", ".join(set(weak)) or "-",
+            "strong": ", ".join(strong) or "-",
+            "weak": ", ".join(weak) or "-",
             "last_score": last_score,
         })
 
@@ -156,7 +133,10 @@ def get_chart_data(data):
         "data": {
             "labels": [d["mentee"] for d in data],
             "datasets": [
-                {"name": "Avg Score", "values": [d["avg_score"] for d in data]}
+                {
+                    "name": "Avg Score",
+                    "values": [d["avg_score"] for d in data],
+                }
             ],
         },
         "type": "bar",
@@ -169,7 +149,8 @@ def get_summary(data):
 
     avg = sum(d["avg_score"] for d in data) / len(data)
     top = sorted(data, key=lambda x: x["avg_score"], reverse=True)[0]
-    weak_count = sum(1 for d in data if d["avg_score"] < 50)
+
+    weak_count = sum(1 for d in data if d["avg_score"] < 5)
 
     return [
         {"label": "Overall Avg Score", "value": round(avg, 2), "indicator": "Green"},
@@ -187,7 +168,7 @@ def get_top_mentees():
             ROUND(AVG(score), 2) as avg_score,
             COUNT(score) as test_count
         FROM `tabTest Answer`
-        WHERE creation >= %s
+        WHERE creation BETWEEN %s AND NOW()
         GROUP BY name_of_mentee
         ORDER BY avg_score DESC, test_count DESC
         LIMIT 5
