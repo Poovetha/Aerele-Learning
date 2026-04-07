@@ -3,8 +3,6 @@
 
 import frappe
 from frappe.model.document import Document
-from frappe.utils import get_url
-
 
 class DailyTest(Document):
 	def before_submit(self):

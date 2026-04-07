@@ -5,18 +5,6 @@ app_description = "Helps to Overview the mentees by mentors"
 app_email = "poovethapalanivelu@gmail.com"
 app_license = "mit"
 
-# doc_events = {
-#     "Test Answer": {
-#         "on_submit": "frappe_learning.telegram.send_feedback_message"
-#     },
-#     "Daily Test": {
-#         "on_submit": "frappe_learning.telegram.notify_test_ready"
-#     },
-#     "Test Time":{
-#         "after_insert": "frappe_learning.telegram.time_request"
-#     }
-# }
-
 override_doctype_class = {
 	"Notification": "frappe_learning.frappe_learning.overrides.notification.CustomNotification"
 }

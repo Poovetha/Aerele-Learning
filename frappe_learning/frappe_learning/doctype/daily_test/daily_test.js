@@ -61,14 +61,12 @@ frappe.ui.form.on("Daily Test", {
 										["lft", ">", node.lft],
 										["rgt", "<", node.rgt],
 										["is_group", "=", 0],
-										["docstatus", "=", 1]
+										["workflow_state","=","Submit"]
 									],
 								},
 								callback: function (r) {
 									table_data = r.message || [];
-
 									table_data.forEach((row) => (row.select = 0));
-
 									dialog.fields_dict.question.df.data = table_data;
 									dialog.fields_dict.question.grid.refresh();
 								},

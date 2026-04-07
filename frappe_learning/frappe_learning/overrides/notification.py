@@ -7,8 +7,6 @@ class CustomNotification(Notification):
 
     def send(self, doc):
 
-        print("Im in custom  Pooooooooooooooooooooooooooooooooooooooooooo")
-        
         if self.channel != "Telegram":
             print("Im channnel Pooooooooooooooooooooooooooooooooooooooooooo")
             return super().send(doc)

@@ -110,7 +110,6 @@ def get_data(filters):
         strong = list(set(strong_all))
         weak = list(set(weak_all))
 
-        # 🔹 Last test score
         last_record = sorted(records, key=lambda x: x.creation, reverse=True)[0]
         last_score = last_record.score
 

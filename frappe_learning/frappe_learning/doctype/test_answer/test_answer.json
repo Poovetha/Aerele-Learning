@@ -35,7 +35,7 @@
    "fieldname": "score",
    "fieldtype": "Int",
    "label": "Score",
-   "read_only": 1
+   "permlevel": 2
   },
   {
    "fieldname": "feedback",
@@ -87,7 +87,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-04-06 11:47:39.857023",
+ "modified": "2026-04-06 18:58:50.466527",
  "modified_by": "Administrator",
  "module": "Frappe Learning",
  "name": "Test Answer",
@@ -107,27 +107,35 @@
    "write": 1
   },
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
+   "mask": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Software Developer",
+   "select": 1,
    "share": 1,
    "submit": 1,
    "write": 1
   },
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
    "export": 1,
+   "mask": 1,
    "print": 1,
    "read": 1,
    "report": 1,
    "role": "Chief Technical Officer",
+   "select": 1,
    "share": 1,
    "submit": 1,
    "write": 1

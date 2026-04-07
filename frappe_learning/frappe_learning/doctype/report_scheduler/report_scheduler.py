@@ -13,8 +13,7 @@ class ReportScheduler(Document):
             base = now.replace(
                 hour=time_obj.hour,
                 minute=time_obj.minute,
-                second=time_obj.second,
-                microsecond=0
+                second=time_obj.second
             )
         else:
             base = now

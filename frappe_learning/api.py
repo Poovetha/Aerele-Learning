@@ -1,135 +1,140 @@
 import re
 import frappe
 import requests
-from frappe.utils import add_days, add_to_date, get_time, now_datetime, today
-
+from frappe_learning.frappe_learning.report.test_performance.test_performance import get_data
+from frappe.utils import add_days, get_time, now_datetime, today,now_datetime,add_to_date
 
 @frappe.whitelist()
 def get_daily_test():
-	user = frappe.session.user
+	employee_data = frappe.get_value(
+		"Employee",
+		{"user_id": frappe.session.user},
+		["name"]
+	)
+	print(employee_data)
 
-	employee = frappe.get_value("Employee", {"user_id": user}, "name")
-	if not employee:
+	if not employee_data:
 		return {}
 
-	mentor = frappe.get_value("Employee", employee, "reports_to")
+	mentor = frappe.get_value("Employee",
+						   {"name":employee_data},
+						   ["reports_to"])
 
 	settings = frappe.get_single("FL Settings")
-	duration = settings.duration
 	start_time = get_time(settings.start_time)
 	end_time = get_time(settings.end_time)
+	duration = settings.duration  
 
 	now = now_datetime()
+	current_time = now.time()
 
-	if now.time() < start_time:
+	if current_time < start_time:
 		return {"status": "not_started"}
 
-	if now.time() > end_time:
+	if current_time > end_time:
 		return {"status": "ended"}
 
-	test = frappe.get_all(
+	test_name = frappe.db.get_value(
 		"Daily Test",
-		filters={
+		{
 			"mentor": mentor,
 			"test_date": today(),
 			"workflow_state": "Approved"
 		},
-		fields=["name"],
-		limit_page_length=1,
+		["name"]
 	)
 
-	if not test:
+	if not test_name:
 		return {"status": "no_test"}
-
-	test_doc = frappe.get_doc("Daily Test", test[0].name)
-
-	questions = [
-		{"question": q.question, "concept": q.concept}
-		for q in test_doc.question_and_answer
-	]
-
-	test_answer = frappe.db.get_value(
-		"Test Answer",
-		{
-			"name_of_mentee": employee,
-			"creation": ["between", [today(), add_days(today(), 1)]],
-		},
-		["name", "start_time", "extra_time"],
-		as_dict=True,
-	)
-
-	if not test_answer:
-		doc = frappe.get_doc({
+	
+	doc = frappe.get_doc({
 			"doctype": "Test Answer",
-			"name_of_mentee": employee,
+			"name_of_mentee": employee_data,
 			"start_time": now
 		})
-		doc.insert(ignore_permissions=True)
+	doc.insert(ignore_permissions=True)
 
-		start_time_user = now
-		extra_time = 0
-	else:
-		start_time_user = test_answer.start_time
-		extra_time = test_answer.extra_time or 0
-
-	personal_end_time = add_to_date(
-		start_time_user,
-		minutes=(duration + extra_time)
+	questions = frappe.get_all(
+		"Concept Questions",
+		filters={"parent": test_name},
+		fields=["question", "concept"]
 	)
+
+	personal_end_time = add_to_date(now, minutes=duration)
 
 	return {
 		"status": "not_started_test",
+		"test": test_name,
 		"questions": questions,
-		"personal_end_time": personal_end_time
+		"personal_end_time": str(personal_end_time)
 	}
-
 
 @frappe.whitelist()
 def duplicate():
 	employee = frappe.get_value("Employee", {"user_id": frappe.session.user}, "name")
 
-	doc = frappe.db.get_value(
+	doc = frappe.db.exists(
 		"Test Answer",
 		{
 			"name_of_mentee": employee,
-			"creation": ["between", [today(), add_days(today(), 1)]],
+			"creation": ["like", f"{today()}%"],
 		},
-		["name"],
-		as_dict=True
 	)
 
-	if not doc:
+	print("Fghjk",doc)
+
+	if doc:
 		return {"duplicate": "No"}
-
-	has_answers = frappe.db.exists(
-		"Answers",
-		{"parent": doc.name}
-	)
-
-	return {"duplicate": "Yes" if has_answers else "No"}
-
+	else:
+		return {"duplicate": "Yes"}
 
 @frappe.whitelist()
 def save_test_answer(answers):
-	user = frappe.session.user
-	employee = frappe.get_value("Employee", {"user_id": user}, "name")
 
-	test_data = frappe.get_value(
+	employee = frappe.db.get_value(
+		"Employee",
+		{"user_id": frappe.session.user},
+		"name"
+	)
+
+	if not employee:
+		frappe.throw("Employee not found")
+
+	test_name = frappe.db.exists(
 		"Test Answer",
 		{
 			"name_of_mentee": employee,
-			"creation": ["between", [today(), add_days(today(), 1)]],
-		},
-		["name", "start_time", "extra_time"],
-		as_dict=True,
+			"creation": ["like", f"{today()}%"],
+		}
 	)
 
-	if not test_data:
+	if not test_name:
 		frappe.throw("Test not started properly")
 
 	answers = frappe.parse_json(answers)
+	
+	questions = []
 
-	doc = frappe.get_doc("Test Answer", test_data.name)
+	for ans in answers:
+		question = ans.get("question")
+		if question:
+			questions.append(question)
+
+	mentor_data = frappe.get_all(
+		"Testing",
+		filters={
+			"question": ["in", questions],
+			"is_group": 0
+		},
+		fields=["question", "answer"]
+	)
+
+	mentor_map = {}
+
+	for d in mentor_data:
+		mentor_map[d.question] = d.answer
+
+	doc = frappe.get_doc("Test Answer", test_name)
 	doc.question_and_answer = []
 
 	result = []
@@ -138,14 +143,7 @@ def save_test_answer(answers):
 		question = ans.get("question")
 		user_answer = ans.get("answer") or "Not Answered"
 
-		q_data = frappe.get_all(
-			"Testing",
-			filters={"question": question, "is_group": 0},
-			fields=["answer"],
-			limit_page_length=1
-		)
-
-		mentor_answer = q_data[0].answer if q_data else ""
+		mentor_answer = mentor_map.get(question, "")
 
 		doc.append(
 			"question_and_answer",
@@ -162,27 +160,31 @@ def save_test_answer(answers):
 			"mentor_answer": mentor_answer
 		})
 
-	doc.save(ignore_permissions=True)
+	doc.save()
 
 	frappe.enqueue(
 		method="frappe_learning.api.ai_report",
 		queue="default",
 		timeout=300,
 		answers=answers,
-		mentee=user
+		mentee=frappe.session.user
 	)
 
 	return result
 
-
 def ai_report(answers, mentee):
-	employee = frappe.get_value("Employee", {"user_id": mentee}, "name")
 
-	doc_name = frappe.get_value(
+	employee = frappe.db.get_value(
+		"Employee",
+		{"user_id": mentee},
+		"name"
+	)
+
+	doc_name = frappe.db.get_value(
 		"Test Answer",
 		{
 			"name_of_mentee": employee,
-			"creation": ["between", [today(), add_days(today(), 1)]],
+			"creation": ["like", f"{today()}%"],
 		},
 		"name",
 	)
@@ -190,7 +192,25 @@ def ai_report(answers, mentee):
 	if not doc_name:
 		return
 
-	doc = frappe.get_doc("Test Answer", doc_name)
+	answers = frappe.parse_json(answers)
+
+	questions = []
+	for ans in answers:
+		if ans.get("question"):
+			questions.append(ans.get("question"))
+
+	mentor_data = frappe.get_all(
+		"Testing",
+		filters={
+			"question": ["in", questions],
+			"is_group": 0
+		},
+		fields=["question", "answer"]
+	)
+
+	mentor_ans = {}
+	for d in mentor_data:
+		mentor_ans[d.question] = d.answer
 
 	qa_list = []
 
@@ -199,21 +219,23 @@ def ai_report(answers, mentee):
 		concept = ans.get("concept")
 		mentee_answer = ans.get("answer")
 
-		mentor_answer = frappe.db.get_value(
-			"Testing",
-			{"question": question, "is_group": 0},
-			"answer"
-		)
+		mentor_answer = mentor_ans.get(question, "")
 
-		qa_list.append({"concepts": concept, "mentor": mentor_answer, "mentee": mentee_answer})
+		qa_list.append({
+			"concepts": concept,
+			"mentor": mentor_answer,
+			"mentee": mentee_answer
+		})
+
+	print("TEST")	
 
 	overall_result = evaluate_overall(qa_list)
 
+	doc = frappe.get_doc("Test Answer", doc_name)
 	doc.score = extract_score(overall_result)
 	doc.feedback = overall_result
 
 	doc.save(ignore_permissions=True)
-
 
 def evaluate_overall(qa_list):
 
@@ -221,10 +243,12 @@ def evaluate_overall(qa_list):
 
 	text = ""
 
+	print("Answer")
+
 	for i, qa in enumerate(qa_list, 1):
 		text += (
 			f"\nQ{i}:\n"
-			f"Concept: {qa.get('concept') or qa.get('concepts')}\n"
+			f"Concept: {qa.get('concepts')}\n"
 			f"Mentor Answer: {qa.get('mentor', '')}\n"
 			f"Mentee Answer: {qa.get('mentee', '')}\n"
 		)
@@ -287,6 +311,7 @@ FINAL: Reward true understanding. Penalize superficial or wrong reasoning. Focus
 			"prompt": prompt,
 			"stream": False
 		}
+	print("test")
 
 	response = requests.post(url, json=payload)
 
@@ -306,37 +331,49 @@ def extract_score(text):
 
 @frappe.whitelist()
 def create_issue_request(reason, time):
-	user = frappe.session.user
-	mentee = frappe.get_value("Employee", {"user_id": user}, "name")
-	mentor = frappe.get_value("Employee", mentee, "reports_to")
+
+	emp = frappe.db.get_value(
+		"Employee",
+		{"user_id": frappe.session.user},
+		["name", "reports_to"],
+		as_dict=True
+	)
+
+	if not emp:
+		frappe.throw("Employee not found")
+
+	mentee = emp.name
+	mentor = emp.reports_to
+
+	if not mentor:
+		frappe.throw("Mentor not assigned")
 
 	if frappe.db.exists(
 		"Test Time",
 		{
 			"mentee": mentee,
 			"status": "Pending",
-			"creation": ["between", [today(), add_days(today(), 1)]],
+			"creation": ["like", f"{today()}%"],
 		},
 	):
 		frappe.throw("Already requested extra time")
 
-	test = frappe.get_all(
+	test_name = frappe.db.get_value(
 		"Daily Test",
-		filters={
+		{
 			"mentor": mentor,
 			"test_date": today(),
 			"workflow_state": "Approved"
 		},
-		fields=["name"],
-		limit_page_length=1,
+		"name"
 	)
 
-	if not test:
+	if not test_name:
 		frappe.throw("No test found")
 
 	doc = frappe.new_doc("Test Time")
 	doc.mentee = mentee
-	doc.test = test[0].name
+	doc.test = test_name
 	doc.extra_min = time
 	doc.reason = reason
 	doc.status = "Pending"
@@ -346,7 +383,6 @@ def create_issue_request(reason, time):
 	send_notification(mentor, doc.name)
 
 	return True
-
 
 def send_notification(mentor, docname):
 	mentor_user = frappe.get_value("Employee", mentor, "user_id")
@@ -364,38 +400,55 @@ def send_notification(mentor, docname):
 	frappe.publish_realtime(event="notification", user=mentor_user)
 
 def run_scheduled_reports():
-	now = now_datetime()
 
 	docs = frappe.get_all(
 		"Report Scheduler",
 		filters={
 			"enabled": 1,
-			"next_run": ["<=", now]
+			"next_run": ["<=", now_datetime()]
 		},
-		fields=["name"]
+		fields=["name", "schedule_type", "next_run"]
 	)
 
+	day_count = {
+		"Daily": 1,
+		"Weekly": 7,
+		"3 Weeks": 21
+	}
+
 	for d in docs:
-		doc = frappe.get_doc("Report Scheduler", d.name)
+		get_data({})
 
-		from frappe_learning.frappe_learning.report.test_performance.test_performance import get_data
-		data = get_data({})
+		days = day_count.get(d.schedule_type, 1)
+		next_run = add_days(d.next_run, days)
 
-		frappe.logger().info(f"Report executed for {doc.name}")
+		frappe.db.set_value(
+			"Report Scheduler",
+			d.name,
+			"next_run",
+			next_run
+		)
 
-		if doc.schedule_type == "Daily":
-			doc.next_run = add_days(doc.next_run, 1)
+@frappe.whitelist()
+def get_extra_time():
+	employee = frappe.db.get_value(
+		"Employee",
+		{"user_id": frappe.session.user},
+		"name"
+	)
 
-		elif doc.schedule_type == "Weekly":
-			doc.next_run = add_days(doc.next_run, 7)
+	test = frappe.db.get_value(
+		"Test Answer",
+		{
+			"name_of_mentee": employee,
+			"creation": ["like", f"{today()}%"],
+		},
+		["extra_time"]
+	)
 
-		elif doc.schedule_type == "3 Weeks":
-			doc.next_run = add_days(doc.next_run, 21)
-
-		doc.save(ignore_permissions=True)
+	return test.extra_time
 
 
 @frappe.whitelist()
 def get_dashboard_data():
-	from frappe_learning.frappe_learning.report.test_performance.test_performance import get_data
 	return get_data({})
