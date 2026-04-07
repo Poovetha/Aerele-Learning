@@ -7,11 +7,11 @@
  "engine": "InnoDB",
  "field_order": [
   "section_break_ibk4",
+  "mentor",
   "concept",
   "question",
   "answer",
-  "amended_from",
-  "mark"
+  "amended_from"
  ],
  "fields": [
   {
@@ -45,16 +45,17 @@
    "label": "Answer"
   },
   {
-   "fieldname": "mark",
-   "fieldtype": "Int",
-   "label": "Mark"
+   "fieldname": "mentor",
+   "fieldtype": "Link",
+   "label": "Mentor",
+   "options": "Employee"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-03-24 13:10:43.228137",
+ "modified": "2026-03-28 16:51:44.613181",
  "modified_by": "Administrator",
  "module": "Frappe Learning",
  "name": "Question and Answer",
@@ -70,6 +71,34 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Software Developer",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Chief Technical Officer",
    "share": 1,
    "submit": 1,
    "write": 1

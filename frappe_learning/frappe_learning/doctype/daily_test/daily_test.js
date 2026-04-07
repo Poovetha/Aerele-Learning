@@ -31,37 +31,54 @@ frappe.ui.form.on("Daily Test", {
 				{
 					fieldname: "concept",
 					fieldtype: "Link",
-					options: "Concepts",
+					options: "Testing", 
 					label: "Concept",
-					default: frm.doc.concept,
+
+					get_query: function () {
+						return {
+							filters: {
+								is_group: 1
+							}
+						};
+					},
 
 					change: function () {
 						let concept = dialog.get_value("concept");
+
 						if (!concept) {
+							frappe.msgprint("Please select a concept");
 							return;
 						}
 
-						frappe.call({
-							method: "frappe.client.get_list",
-							args: {
-								doctype: "Question and Answer",
-								fields: ["question", "answer"],
-								filters: { concept: concept },
-							},
-							callback: function (r) {
-								table_data = r.message || [];
-								table_data.forEach((row) => (row.select = 0));
+						frappe.db.get_doc("Testing", concept).then((node) => {
 
-								dialog.fields_dict.question.df.data = table_data;
-								dialog.fields_dict.question.grid.refresh();
-							},
+							frappe.call({
+								method: "frappe.client.get_list",
+								args: {
+									doctype: "Testing",
+									fields: ["name", "question", "answer"],
+									filters: [
+										["lft", ">", node.lft],
+										["rgt", "<", node.rgt],
+										["is_group", "=", 0],
+										["workflow_state","=","Submit"]
+									],
+								},
+								callback: function (r) {
+									table_data = r.message || [];
+									table_data.forEach((row) => (row.select = 0));
+									dialog.fields_dict.question.df.data = table_data;
+									dialog.fields_dict.question.grid.refresh();
+								},
+							});
+
 						});
 					},
 				},
 				{
 					fieldname: "question",
 					fieldtype: "Table",
-					label: "Question",
+					label: "Questions",
 					cannot_add_rows: true,
 					data: table_data,
 					get_data: () => table_data,
@@ -72,11 +89,14 @@ frappe.ui.form.on("Daily Test", {
 			primary_action_label: "Add",
 			primary_action() {
 				let selected = dialog.fields_dict.question.grid.get_selected_children();
+
 				if (!selected.length) {
 					frappe.msgprint("Please select atleast one question");
 					return;
 				}
+
 				selected.forEach((q) => {
+
 					let already_exists = frm.doc.question_and_answer.some(
 						(row) => row.question === q.question
 					);
@@ -84,9 +104,11 @@ frappe.ui.form.on("Daily Test", {
 					if (!already_exists) {
 						let row = frm.add_child("question_and_answer");
 
-						(row.question = q.question),
-							(row.answer = q.answer),
-							(row.concept = dialog.get_value("concept"));
+						row.question = q.question;
+						row.answer = q.answer;
+
+						row.concept = dialog.get_value("concept");
+
 					} else {
 						frappe.msgprint("This Question was already added.");
 					}
@@ -96,6 +118,7 @@ frappe.ui.form.on("Daily Test", {
 				dialog.hide();
 			},
 		});
+
 		dialog.show();
 	},
 });

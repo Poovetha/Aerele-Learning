@@ -5,6 +5,11 @@ app_description = "Helps to Overview the mentees by mentors"
 app_email = "poovethapalanivelu@gmail.com"
 app_license = "mit"
 
+override_doctype_class = {
+	"Notification": "frappe_learning.frappe_learning.overrides.notification.CustomNotification"
+}
+
+scheduler_events = {"cron": {"*/10 * * * *": ["frappe_learning.api.run_scheduled_reports"]}}
 
 # boot_session = "frappe_learning.api.mentee_login"
 # app_include_js = "/assets/frappe_learning/js/redirect_bundle.js"

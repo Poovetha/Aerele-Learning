@@ -1,0 +1,35 @@
+{
+ "chart_name": "Performance",
+ "chart_type": "Report",
+ "creation": "2026-04-03 16:29:17.818650",
+ "currency": "INR",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2026-04-03 16:29:58.629744",
+ "modified_by": "Administrator",
+ "module": "Frappe Learning",
+ "name": "Performance",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Test Performance",
+ "roles": [],
+ "show_values_over_chart": 0,
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Line",
+ "use_report_chart": 1,
+ "x_field": "mentee",
+ "y_axis": [
+  {
+   "color": "#449CF0",
+   "y_field": "last_score"
+  }
+ ]
+}
